@@ -1,0 +1,58 @@
+public class GradeCalculator {
+
+  private static final int MAX_CLASSES = 9;
+  
+  public static void main(String[] args) {
+
+    int numRecords = 0;
+    double totalCreditHours = 0.0;
+    double totalGradePoints = 0.0;
+
+    List<Grade> grades = new ArrayList<>();
+
+    // Process user input
+    processGrades(grades);
+
+    // Check if any valid grades were entered
+    if (grades.size() > 0) {
+      // Calculate results  
+      numRecords = grades.size();
+      totalCreditHours = calculateTotalCredits(grades);
+      totalGradePoints = calculateTotalPoints(grades);
+
+      // Display report
+      displayReport(numRecords, totalCreditHours, totalGradePoints);
+
+    } else {
+      System.out.println("No valid grades entered, please try again.");
+    }
+  }
+
+  private static void processGrades(List<Grade> grades) {
+    
+    System.out.println("Enter the name of each class, the # of credit hours per class, " 
+        + "as well as the grade you received." 
+        + "\nYou may enter up to 9 classes (enter 'Q' to quit)."
+        + "\nClasses with pass (P) and incomplete (I) grades can be entered, but do not contribute to your GPA.");
+    
+    Scanner scanner = new Scanner(System.in);
+    Map<String, Double> gradePoints = getGradePointsMapping();
+        
+    for (int i = 0; i < MAX_CLASSES; i++) {
+      Grade grade = inputGrade(scanner, i);
+      if (grade == null) {
+        // User quit
+        break;  
+      }
+      
+      if (isValidGrade(grade, gradePoints)) {
+        double points = gradePoints.get(grade.getLetterGrade());
+        grade.setGradePoints(points);
+        grades.add(grade);
+        } else {
+            System.out.println("Invalid grade entered, please try again.");
+            i--; // Retry this class
+        }
+    }
+    scanner.close();
+  }
